@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  unutbu:
+  pricelist:
     build: .
     volumes:
-    - ./output:/oerp-pricelist/output
+    - ./output:/output

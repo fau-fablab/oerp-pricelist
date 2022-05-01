@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 # cleanup output
 find output/ -name "*.html" -delete
 # create pricelists
