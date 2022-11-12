@@ -431,6 +431,7 @@ def main():
               (228, default_cols),  # Fräsenmaterial
               ("Laser", default_cols),
               ("Schneideplotter", default_cols),
+              ("Textilbearbeitung", default_cols),
               ("Platinenfertigung", default_cols),
               ("Alle Produkte", default_cols)
     ]
