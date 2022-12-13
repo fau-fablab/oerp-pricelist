@@ -203,6 +203,11 @@ def fetch_stock_location(location_id):
     return oerp_read('stock.location', location_id)
 
 
+@lru_cache(LRU_CACHE_MAX_ENTRIES)
+def fetch_product_uom(uom_id):
+    return oerp_read('product.uom', uom_id)
+
+
 def get_location_str_from_product(p):
     with Profiler("get_location_str_from_product"):
         location = p['property_stock_location']
@@ -226,6 +231,21 @@ def get_location_str_from_product(p):
             # no location set at all
             location_string = "kein Ort eingetragen"
         return location_string
+
+
+def get_uom_rounding_from_product(p):
+    with Profiler("get_uom_rounding_from_product"):
+        uom_id = p['uom_id']
+        rounding = 1.0
+        if uom_id:
+            product_uom = fetch_product_uom(uom_id)
+            if product_uom['rounding']:
+                rounding = product_uom['rounding']
+        else:
+            # no rounding set at all
+            # assume rounding 1
+            rounding = 1.0
+        return rounding
 
 
 def _parse_product(p):
@@ -278,6 +298,7 @@ def _parse_product(p):
     p['uom_id'] = p['uom_id'][0]
 
     p['_location_str'] = get_location_str_from_product(p)
+    p['_uom_rounding'] = get_uom_rounding_from_product(p)
     return p
 
 
@@ -310,7 +331,7 @@ def import_products_oerp(cat_name, data, extra_filters=None, columns=None):
 
     # columns starting with _ are generated in this script and not from the DB
     query_columns = [col for col in columns if not col.startswith("_")]
-    
+
     chunk_size = 100
     with tqdm(total=len(prod_ids), desc="Fetching products of category '{}'".format(cat_name), leave=False) as pbar:
         for prod_ids_slice in split_list(prod_ids, chunk_size):
