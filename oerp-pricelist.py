@@ -262,7 +262,7 @@ def _parse_product(p):
     p['_categ_str'] = " / ".join(p['_categ_list'])
 
     # _price_str: list price as string
-    price_str = '{:.3f}'.format(p['lst_price'])
+    price_str = '{:.3f}'.format(p['lst_price']).replace(".", ",")
     if price_str[-1] == "0":  # third digit only if nonzero
         price_str = price_str[:-1]
     p['_price_str'] = u'{} €'.format(price_str)
@@ -299,6 +299,17 @@ def _parse_product(p):
 
     p['_location_str'] = get_location_str_from_product(p)
     p['_uom_rounding'] = get_uom_rounding_from_product(p)
+
+    # String für Verkaufseinheit: "pro Stück"
+    if p['lst_price'] == 0 or p["_uom_str"].startswith("bei"):
+        # keine Einheit anzeigen, wenn
+        # - Preis null
+        # oder
+        # - Einheit mit "bei" anfängt, weil "pro bei" Unfug ist
+        p['_per_uom_str'] = p['_uom_str']
+    else:
+        p['_per_uom_str'] = "pro " + p['_uom_str']
+
     return p
 
 
