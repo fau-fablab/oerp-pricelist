@@ -397,7 +397,7 @@ def make_price_list_html(base_category, columns, column_names):
         base_category = category_id_from_name(base_category)
     categories = get_category_with_descendants(base_category)
     data = import_products_oerp(cat_name, {}, [('categ_id', 'in', categories)], columns)
-    jsondata = json.dumps(data);
+    jsondata = json.dumps(data)
 
     def make_header(x):
         return column_names.get(x, x)
@@ -481,6 +481,18 @@ def main():
         f = open("output/" + filename + ".json", "w");
         f.write(jsondata)
         f.close()
+
+    with open("output/categories_Alle_Produkte.json", "w") as f:
+        # generate a json of categories for category "Alle Produkte"
+        cat_name = "Alle Produkte"
+        if type(cat_name) != int:
+            base_category = category_id_from_name(cat_name)
+        categories = get_category_with_descendants(base_category)
+        out = []
+        for category in categories:
+            out.append(get_category(category))
+        jsondata = json.dumps(out)
+        f.write(jsondata)
 
     shutil.copyfile("shop.html", "output/shop.html")
     f = open("output/index.html", "w")
