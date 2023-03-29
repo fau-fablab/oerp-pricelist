@@ -150,8 +150,12 @@ def category_id_from_name(name):
     return get_id('product.category', [('name', '=', name)])
 
 
-def get_category_with_descendants(prod_id):
-    return [prod_id] + get_category_descendants(prod_id)
+def get_category_with_descendants(cat_id):
+    """
+    get IDs of all descendant categories (sub-category, sub-sub-category, ...),
+    including the original category itself
+    """
+    return [cat_id] + get_category_descendants(cat_id)
 
 
 @lru_cache(LRU_CACHE_MAX_ENTRIES)
@@ -173,9 +177,13 @@ def get_category_children(cat_id):
             yield c['id']
 
 
-def get_category_descendants(prod_id):
-    children = list(get_category_children(prod_id))
-    descendants = children
+def get_category_descendants(cat_id):
+    """
+    get IDs of all descendant categories (sub-category, sub-sub-category, ...),
+    excluding the original category itself
+    """
+    children = list(get_category_children(cat_id))
+    descendants = list(children) # make a copy to avoid that 'children' is modified later
     for x in children:
         descendants += get_category_descendants(x)
     return descendants
@@ -392,11 +400,10 @@ def make_html_from_template(heading, content):
 
 
 def make_price_list_html(base_category, columns, column_names):
-    cat_name = base_category
     if type(base_category) != int:
         base_category = category_id_from_name(base_category)
     categories = get_category_with_descendants(base_category)
-    data = import_products_oerp(cat_name, {}, [('categ_id', 'in', categories)], columns)
+    data = import_products_oerp(base_category, {}, [('categ_id', 'in', categories)], columns)
     jsondata = json.dumps(data)
 
     def make_header(x):
@@ -484,9 +491,9 @@ def main():
 
     with open("output/categories_Alle_Produkte.json", "w") as f:
         # generate a json of categories for category "Alle Produkte"
-        cat_name = "Alle Produkte"
-        if type(cat_name) != int:
-            base_category = category_id_from_name(cat_name)
+        base_category = "Alle Produkte"
+        if type(base_category) != int:
+            base_category = category_id_from_name(base_category)
         categories = get_category_with_descendants(base_category)
         out = []
         for category in categories:
