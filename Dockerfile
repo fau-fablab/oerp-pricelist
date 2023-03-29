@@ -4,6 +4,7 @@ RUN apt update && \
         python2.7-minimal python-pip python-setuptools python-natsort python-repoze.lru \
         git language-pack-de rsync && \
     python2 -m pip install oerplib
-COPY . .
+COPY requirements.txt .
 RUN python2 -m pip install --upgrade -r requirements.txt
+COPY . .
 ENTRYPOINT [ "./run.sh" ]
