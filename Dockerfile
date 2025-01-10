@@ -1,10 +1,9 @@
-FROM ubuntu:18.04
-RUN apt update && \
-    apt -y --no-install-recommends install \
-        python2.7-minimal python-pip python-setuptools python-natsort python-repoze.lru \
-        git language-pack-de rsync && \
-    python2 -m pip install oerplib
+FROM ubuntu:24.04
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install \
+        python3-minimal python3-pip python3-setuptools python3-natsort python3-repoze.lru \
+        git language-pack-de rsync
 COPY requirements.txt .
-RUN python2 -m pip install --upgrade -r requirements.txt
+RUN pip3 install --break-system-packages --upgrade -r requirements.txt
 COPY . .
 ENTRYPOINT [ "./run.sh" ]

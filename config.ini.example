@@ -1,5 +1,5 @@
 [openerp]
-server = xn--eichhrnchen-vfb.fablab.fau.de
+server = erp:INSERT_PASSWORD_HERE@xn--eichhrnchen-vfb.fablab.fau.de
 port = 443
 database = production
 user = kassenterminal

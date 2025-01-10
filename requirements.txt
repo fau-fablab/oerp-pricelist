@@ -1,4 +1,4 @@
-oerplib
+oerplib3
 natsort
 repoze.lru
 jinja2
